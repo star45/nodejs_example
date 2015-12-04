@@ -13,6 +13,19 @@ var app = express();
 global.dbHelper = require( './common/dbHelper' );
 global.db = mongoose.connect("mongodb://114.215.155.89:27017/shop");
 
+// 设定views变量，意为视图存放的目录
+app.set('views', path.join(__dirname, 'views'));
+// 设定view engine变量，意为网页模板引擎
+app.set( 'view engine', 'html' );
+app.engine( '.html', require( 'ejs' ).__express );
+app.use(logger('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+// app.use(multer());
+app.use(cookieParser());
+// 设定静态文件目录，比如本地文件
+app.use(express.static(path.join(__dirname, 'public')));
+
 app.use(session({
     secret:'secret',
     resave:true,
@@ -22,31 +35,7 @@ app.use(session({
     }
 }));
 
-// 设定views变量，意为视图存放的目录
-app.set('views', path.join(__dirname, 'views'));
-// 设定view engine变量，意为网页模板引擎
-app.set( 'view engine', 'html' );
-app.engine( '.html', require( 'ejs' ).__express );
 
-
-
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-// app.use(multer());
-app.use(cookieParser());
-// 设定静态文件目录，比如本地文件
-app.use(express.static(path.join(__dirname, 'public')));
-
-app.use(function(req, res, next){
-    res.locals.user = req.session.user;
-    var err = req.session.error;
-    res.locals.message = '';
-    if (err) res.locals.message = '<div class="alert alert-danger" style="margin-bottom: 20px;color:red;">' + err + '</div>';
-    next();
-});
-
-require('./routes/index')(app);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -56,6 +45,13 @@ app.use(function(req, res, next) {
 });
 
 // error handlers
+app.use(function(req, res, next){
+    res.locals.user = req.session.user;
+    var err = req.session.error;
+    res.locals.message = '';
+    if (err) res.locals.message = '<div class="alert alert-danger" style="margin-bottom: 20px;color:red;">' + err + '</div>';
+    next();
+});
 
 // development error handler
 // will print stacktrace
@@ -78,5 +74,5 @@ app.use(function(err, req, res, next) {
     error: {}
   });
 });
-
+require('./routes/index')(app);
 module.exports = app;
