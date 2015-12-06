@@ -1,18 +1,17 @@
+/**
+ * 
+ */
 var express = require('express');
-var Movie = require('../models/Movie')
 var router = express.Router();
+var Index = require('../app/controllers/index');
+var User = require('../app/controllers/user');
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-    Movie.fetch(function(err,movies){
-        if(err){
-            console.log(err);
-        }
-        res.render('index', { 
-            title: '51电影网首页',
-            movies: []
-        });
-    });
+router.get(function(req,res,next){
+    next();
+
 });
-
+/* GET home page. */
+router.get('/', Index.index);
+router.get('/signup',User.showSignup);
+router.get('/signin',User.showSignin);
 module.exports = router;
