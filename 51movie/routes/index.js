@@ -14,4 +14,5 @@ router.get(function(req,res,next){
 router.get('/', Index.index);
 router.get('/signup',User.showSignup);
 router.get('/signin',User.showSignin);
+router.get('/results',Index.search);
 module.exports = router;

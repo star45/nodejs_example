@@ -1,3 +1,4 @@
+
 /**
  * 
  */
@@ -6,36 +7,22 @@ var Schema = mongoose.Schema;
 var ObjectId = Schema.Types.ObjectId;
 
 //电影数据类型
-var MovieSchema = new Schema({
-    doctor: String,
-    title: String,
-    language: String,
-    country: String,
-    summary: String,
-    flash: String,
-    poster: String,
-    year: Number,
-    pv:{
-        type:Number,
-        default:0
-    },
-    category:{
-        type:ObjectId,
-        ref:'Category'
-    },
+var CatetorySchema = new Schema({
+    name: String,
+    movies: [{type: ObjectId,ref:'Movie'}],
     meta: {
         createAt: {
             type: Date,
             default: Date.now()
         },
         updateAt: {
-        type: Date,
-        default: Date.now()
+            type: Date,
+            default: Date.now()
         }
     }
 });
 
-MovieSchema.pre('save',function(next){
+CatetorySchema.pre('save',function(next){
     if(this.isNew){
         this.meta.createAt = this.meta.updateAt = Date.now();
     }else{
@@ -44,13 +31,13 @@ MovieSchema.pre('save',function(next){
     next();
 });
 
-MovieSchema.static('fetch',function(callback){
+CatetorySchema.static('fetch',function(callback){
     return this.find({}).sort('meta.updataAt').exec(callback);
 });
-MovieSchema.static.findAll2 = function(callback){
+CatetorySchema.static.findAll2 = function(callback){
     return this.find({}).sort('meta.updataAt').exec(callback);
 };
-MovieSchema.static = {
+CatetorySchema.static = {
     fetch: function(cb){
         return this.find({}).sort('meta.updataAt').exec(cb);
     },
@@ -59,7 +46,7 @@ MovieSchema.static = {
     }
 };
 
-module.exports = MovieSchema;
+module.exports = CatetorySchema;
 
 
 

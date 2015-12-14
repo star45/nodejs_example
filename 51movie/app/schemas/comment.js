@@ -6,23 +6,22 @@ var Schema = mongoose.Schema;
 var ObjectId = Schema.Types.ObjectId;
 
 //电影数据类型
-var MovieSchema = new Schema({
-    doctor: String,
-    title: String,
-    language: String,
-    country: String,
-    summary: String,
-    flash: String,
-    poster: String,
-    year: Number,
-    pv:{
-        type:Number,
-        default:0
-    },
-    category:{
-        type:ObjectId,
-        ref:'Category'
-    },
+var CommentSchema = new Schema({
+    
+    movie: {type: ObjectId,ref: 'Movie'},
+    from:{type:ObjectId,ref:'User'},   //评论人
+    reply:[{                             //对评论人的回复
+        from:{type:ObjectId,ref:'User'},
+        to:{type:ObjectId,ref:'User'},     //被评论人
+        content:String,
+        meta: {
+            createAt: {
+                type: Date,
+                default: Date.now()
+            }
+        }       
+    }],                       
+    content:String,                    //评论内容
     meta: {
         createAt: {
             type: Date,
@@ -35,7 +34,7 @@ var MovieSchema = new Schema({
     }
 });
 
-MovieSchema.pre('save',function(next){
+CommentSchema.pre('save',function(next){
     if(this.isNew){
         this.meta.createAt = this.meta.updateAt = Date.now();
     }else{
@@ -44,13 +43,13 @@ MovieSchema.pre('save',function(next){
     next();
 });
 
-MovieSchema.static('fetch',function(callback){
+CommentSchema.static('findAll',function(callback){
     return this.find({}).sort('meta.updataAt').exec(callback);
 });
-MovieSchema.static.findAll2 = function(callback){
+CommentSchema.static.findAll2 = function(callback){
     return this.find({}).sort('meta.updataAt').exec(callback);
 };
-MovieSchema.static = {
+CommentSchema.static = {
     fetch: function(cb){
         return this.find({}).sort('meta.updataAt').exec(cb);
     },
@@ -59,7 +58,7 @@ MovieSchema.static = {
     }
 };
 
-module.exports = MovieSchema;
+module.exports = CommentSchema;
 
 
 
